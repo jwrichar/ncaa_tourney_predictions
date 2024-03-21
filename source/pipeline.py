@@ -1,11 +1,9 @@
 import os
 
-import numpy as np
 import pandas as pd
 
 from source import data_utils, \
-    features, \
-    model
+    features
 from source.model import BoostingModel
 
 
@@ -63,7 +61,7 @@ def predict(df, config):
     # Set build directory:
     os.environ['BUILD_DIR'] = config.get('build_dir', '_build/')
 
-    print('Loading energy benchmarking model.')
+    print('Loading NCAA Tournament model.')
     m = BoostingModel()
     m.load()
 
@@ -80,11 +78,12 @@ def predict(df, config):
 
     print('Running predictions on %i games.' % len(df))
     pred = m.predict(df, model_params)
-    pred_probs = pd.Series(pred, index=obs_target.index, name='predicted_eui')
+    pred_target = pd.Series(pred['values'], index=obs_target.index, name='predictions')
+    pred_score = pred['scores'].max(axis=1).values
 
     # Create df to store all predictions and output:
     df_out = pd.concat([obs_target, pred_target], axis=1)
-    df_out['efficiency_ratio'] = eff_ratio
+    df_out['score'] = pred_score
 
     # Set index as a column to preserve it in dict output:
     df_out.reset_index(drop=False, inplace=True)

@@ -14,7 +14,10 @@ def add_kenpom_features(df):
 
     Modifies df in place.
     '''
+    # Add Seed Difference:
+    df['seed_diff'] = df['seed_num_team_1'] - df['seed_num_team_2']
 
+    # Read KenPom data set:
     df_kenpom = pd.read_csv(
         os.path.join(DATA_DIR, '../data/kenpom_data.csv'))
     # Drop entries with missing team IDs
